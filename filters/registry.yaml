@@ -1,0 +1,17 @@
+all:
+  query_file: virtual_dataset_query_example.sql
+  args: null
+
+by_session:
+  query_file: by_session.sql
+  args:
+    session_id:
+      type: str
+
+by_class_ids:
+  query_file: by_class_ids.sql
+  args:
+    class_ids:
+      type: list
+      items:
+        type: int
