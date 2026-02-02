@@ -104,8 +104,9 @@ def main():
     parser.add_argument(
         "--query_file",
         type=str,
-        required=True,
+        required=False,
         help="Registry key (e.g. all, by_session, by_class_ids) or path to .sql file. Must return (tile_pk, tile_id, label_id).",
+        default="/home/aerotract/2software/labeler/filters/virtual_dataset_query_example.sql"
     )
     parser.add_argument("--registry", type=str, default=None, help="Path to registry.yaml (default: labeler/filters/registry.yaml)")
     parser.add_argument("--session_id", type=str, default=None, help="Required for by_session; bind :session_id")
@@ -135,11 +136,15 @@ def main():
         params["class_ids"] = args.class_ids
 
     result = create_virtual_dataset(query_file=resolved_path, params=params if params else None)
+    query_sql = _resolve_sql(resolved_path)
     output_json = {
-        "out_path": args.out_path,
-        "query_file": user_query_file,
-        "session_id": args.session_id,
-        "class_ids": args.class_ids,
+        "metadata": {
+            "out_path": args.out_path,
+            "query_file": user_query_file,
+            "query": query_sql,
+            "session_id": args.session_id,
+            "class_ids": args.class_ids,
+        },
         "virtual_dataset": result,
     }
     out = json.dumps(output_json, indent=2)

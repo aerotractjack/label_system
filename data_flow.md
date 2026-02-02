@@ -17,6 +17,28 @@ Ingest reads `parameters.json`, `tiles.geojson`, and `labels.geojson` for a sess
 - Viewed tiles are inserted (with `crs` and `transform` from tiles GeoJSON).
 - Labels are inserted with `tile_pk` resolved from (session_id, tile_id) after tiles are in place.
 
-# Step 3) PostGIS + Data Lake --> COCO (or other formats)
-- **Virtual dataset:** Query sessions (optional filters). Output JSON keyed by tile primary key: `{ tile_pk: { "tile_id": "col_row", "label_ids": [ ... ] } }`. Used to define which tiles and labels go into a dataset.
-- **COCO dataset:** Input = virtual dataset JSON + output dir. Copies WebP chips by tile pk; builds `annotations/instances.json`. **Bbox conversion** uses each tile’s stored **transform** (inverse: CRS → tile pixel); the raster is not required. Labels on tiles without a transform are skipped.
+# Step 3) PostGIS + Data Lake --> Virtual Dataset (or other formats)
+- **Virtual dataset:** Query sessions (optional filters). Output JSON Used to define which tiles and labels go into a dataset. Structure of the output is 
+    ```JSON
+    {
+        "metadata": {
+            "out_path": ...,
+            "query_file": ...,
+            "session_id": ...,
+            "class_ids": ...,
+        },
+        "virtual_dataset": {
+            tile.pk: {
+                "label_ids": [
+                    label1.pk,
+                    label2.pk
+                ]
+            },
+            ...
+        },
+    }
+    ```
+
+# Step 4) Virtual Dataset --> COCO
+- **COCO dataset:** Input = virtual dataset JSON + output dir. Copies WebP chips by tile pk; builds `annotations/instances.json`. 
+- **Bbox conversion** uses each tile’s stored **transform** (inverse: CRS → tile pixel); the raster is not required. Labels on tiles without a transform are skipped.

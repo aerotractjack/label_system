@@ -97,7 +97,28 @@ Chip images live under each session directory:
             ...
 ```
 
-# Step 3) PostGIS + Data Lake to COCO
-**Virtual dataset** (e.g. `create_virtual_dataset.py`): Query sessions (optional filters: session_ids, chip_sizes, present_classes, etc.). Output JSON keyed by **tile primary key** (tiles.id): `{ tile_pk: { "tile_id": "col_row", "label_ids": [ ... ] } }`. Includes empty tiles.
+# Step 3) PostGIS + Data Lake --> Virtual Dataset (or other formats)
+- **Virtual dataset:** Query sessions (optional filters). Output JSON Used to define which tiles and labels go into a dataset. Structure of the output is 
+    ```JSON
+    {
+        "metadata": {
+            "out_path": ...,    # for tracking purposes, the output path of the virtual dataset description file
+            "query_file": ...,  # the query template used
+            "session_id": ...,  # if provided, session_id to filter results to
+            "class_ids": ...,   # if provided, class_ids to filter results to
+            "query": ...,       # SQL query used to filter results
+        },
+        "virtual_dataset": {
+            tile.pk: {          # unique 
+                "label_ids": [
+                    label1.pk,
+                    label2.pk
+                ]
+            },
+            ...
+        },
+    }
+    ```
+
 
 **COCO dataset** (e.g. `create_coco_dataset.py`): Input = virtual dataset JSON path + output directory. Copies WebP chips into `output_dir/images/` (filenames = tile pk for uniqueness). Builds `output_dir/annotations/instances.json` (COCO format). **Bbox conversion** uses each tile’s stored `transform` (inverse affine: CRS → tile pixel); the raster is **not** required. Labels without a tile transform are skipped (with a warning).
