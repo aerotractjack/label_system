@@ -1,0 +1,17 @@
+doug_fir_seedling:
+  desc: "Douglas Fir seedling/yearling"
+  class_id: 0
+  class_name: "DF"
+  annot_color: "blue"
+
+dead_douglas_fir_seedling:
+  desc: "Dead Douglas Fir seedling/yearling"
+  class_id: 1
+  class_name: "D_DF"
+  annot_color: "red"
+
+western_hemlock_seedling:
+  desc: "Western Hemlock seedling/yearling"
+  class_id: 2
+  class_name: "WH"
+  annot_color: "green"
